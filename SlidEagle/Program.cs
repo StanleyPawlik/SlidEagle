@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using SlidEagle.Data;
+using SlidEagle.Interfaces;
+using SlidEagle.Repository;
 
 namespace SlidEagle
 {
@@ -11,6 +14,7 @@ namespace SlidEagle
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<IItemRepository, ItemRepository>();
             builder.Services.AddDbContext<AppDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));

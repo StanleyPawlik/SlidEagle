@@ -2,51 +2,69 @@
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.EntityFrameworkCore;
 using SlidEagle.Data;
+using SlidEagle.Interfaces;
 using SlidEagle.Models;
+using SlidEagle.Repository;
 
 namespace SlidEagle.Controllers
 {
     public class ItemsController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IItemRepository _repository;
 
-        public ItemsController(AppDbContext context)
+        public ItemsController(AppDbContext context, IItemRepository repository)
         {
             _context = context;
+            _repository = repository;
         }
+        
 
         // GET: Movies
         public async Task<IActionResult> Index(string ItemRideStyle, string searchString)
         {
             // Use LINQ to get list of genres.
-            IQueryable<string> rideStyleQuery = from m in _context.Items
-                                            orderby m.RideStyle
-                                            select m.RideStyle;
-            var items = from m in _context.Items
+            //IQueryable<string> rideStyleQuery = from m in _context.Items
+            //                                orderby m.RideStyle
+            //                                select m.RideStyle;
+            //var items = from m in _context.Items
+            //             select m;
+
+            //if (!string.IsNullOrEmpty(searchString))
+            //{
+            //    items = items.Where(s => s.Name!.Contains(searchString));
+            //}
+
+            //if (!string.IsNullOrEmpty(ItemRideStyle))
+            //{
+            //    items = items.Where(x => x.RideStyle == ItemRideStyle);
+            //}
+
+            //var itemRideStyleVM = new ItemRideStyleViewModel
+            //{
+            //    RideStyles = new SelectList(await rideStyleQuery.Distinct().ToListAsync()),
+            //    Items = await items.ToListAsync()
+            //};
+
+
+            //return View(itemRideStyleVM);
+
+            var items = from m in _repository.GetAll()
                          select m;
-
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                items = items.Where(s => s.Name!.Contains(searchString));
-            }
-
-            if (!string.IsNullOrEmpty(ItemRideStyle))
-            {
-                items = items.Where(x => x.RideStyle == ItemRideStyle);
-            }
-
-            var movieGenreVM = new ItemRideStyleViewModel
-            {
-                RideStyles = new SelectList(await rideStyleQuery.Distinct().ToListAsync()),
-                Items = await items.ToListAsync()
-            };
-
-            return View(movieGenreVM);
+            //var itemRideStyleVM = new ItemRideStyleViewModel
+            //{
+                
+            //    Items = items
+            //}
+            return View(items);
+            
         }
         [HttpPost]
         public string Index(string searchString, bool notUsed)
