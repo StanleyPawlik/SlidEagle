@@ -2,51 +2,72 @@
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.EntityFrameworkCore;
 using SlidEagle.Data;
+using SlidEagle.Interfaces;
 using SlidEagle.Models;
+using SlidEagle.Repository;
 
 namespace SlidEagle.Controllers
 {
     public class ItemsController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IItemRepository _repository;
+        private readonly IRideStyleRepository _rideStyleRepository;
 
-        public ItemsController(AppDbContext context)
+        public ItemsController(AppDbContext context, IItemRepository repository, IRideStyleRepository rideStyleRepository)
         {
             _context = context;
+            _repository = repository;
+            _rideStyleRepository = rideStyleRepository;
         }
+        
 
         // GET: Movies
         public async Task<IActionResult> Index(string ItemRideStyle, string searchString)
         {
             // Use LINQ to get list of genres.
-            IQueryable<string> rideStyleQuery = from m in _context.Items
-                                            orderby m.RideStyle
-                                            select m.RideStyle;
-            var items = from m in _context.Items
+            //IQueryable<string> rideStyleQuery = from m in _context.Items
+            //                                    orderby m.RideStyle
+            //                                    select m.RideStyle;
+            //var items = from m in _context.Items
+            //            select m;
+
+            //if (!string.IsNullOrEmpty(searchString))
+            //{
+            //    items = items.Where(s => s.Name!.Contains(searchString));
+            //}
+
+            //if (!string.IsNullOrEmpty(ItemRideStyle))
+            //{
+            //    items = items.Where(x => x.RideStyle == ItemRideStyle);
+            //}
+
+            //var itemRideStyleVM = new ItemRideStyleViewModel
+            //{
+            //    RideStyles = new SelectList(await rideStyleQuery.Distinct().ToListAsync()),
+            //    Items = await items.ToListAsync()
+            //};
+
+
+            //return View(itemRideStyleVM);
+
+            var items = from m in _repository.Search(searchString, ItemRideStyle)
                          select m;
-
-            if (!string.IsNullOrEmpty(searchString))
+            //var rideStyles = _rideStyleRepository.GetAll();
+            var itemRideStyleVM = new ItemRideStyleViewModel
             {
-                items = items.Where(s => s.Name!.Contains(searchString));
-            }
-
-            if (!string.IsNullOrEmpty(ItemRideStyle))
-            {
-                items = items.Where(x => x.RideStyle == ItemRideStyle);
-            }
-
-            var movieGenreVM = new ItemRideStyleViewModel
-            {
-                RideStyles = new SelectList(await rideStyleQuery.Distinct().ToListAsync()),
-                Items = await items.ToListAsync()
+                RideStyles = new SelectList(_rideStyleRepository.GetAll()),
+                Items = items.ToList()
             };
-
-            return View(movieGenreVM);
+            return View(itemRideStyleVM);
+            
         }
         [HttpPost]
         public string Index(string searchString, bool notUsed)
@@ -56,17 +77,18 @@ namespace SlidEagle.Controllers
         // GET: Items/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Items == null)
+            if (id == null )
             {
                 return NotFound();
             }
 
-            var item = await _context.Items
-                .FirstOrDefaultAsync(m => m.ItemId == id);
-            if (item == null)
-            {
-                return NotFound();
-            }
+            //    var item = await _context.Items
+            //        .FirstOrDefaultAsync(m => m.ItemId == id);
+            //    if (item == null)
+            //    {
+            //        return NotFound();
+            //    }
+            var item = _repository.GetById(id);
 
             return View(item);
         }
@@ -84,10 +106,15 @@ namespace SlidEagle.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ItemId,Name,RideStyle,Price,Image,Description")] Item item)
         {
+            //if (ModelState.IsValid)
+            //{
+            //    _context.Add(item);
+            //    await _context.SaveChangesAsync();
+            //    return RedirectToAction(nameof(Index));
+            //}
             if (ModelState.IsValid)
             {
-                _context.Add(item);
-                await _context.SaveChangesAsync();
+                var _item = _repository.Add(item);
                 return RedirectToAction(nameof(Index));
             }
             return View(item);
@@ -96,12 +123,7 @@ namespace SlidEagle.Controllers
         // GET: Items/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Items == null)
-            {
-                return NotFound();
-            }
-
-            var item = await _context.Items.FindAsync(id);
+            var item = _repository.GetById(id);
             if (item == null)
             {
                 return NotFound();
@@ -123,22 +145,8 @@ namespace SlidEagle.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(item);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ItemExists(item.ItemId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _repository.Update(item);
+                
                 return RedirectToAction(nameof(Index));
             }
             return View(item);
@@ -147,43 +155,22 @@ namespace SlidEagle.Controllers
         // GET: Items/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Items == null)
+            var _item = _repository.GetById(id);
+            if (_item == null)
             {
                 return NotFound();
             }
 
-            var item = await _context.Items
-                .FirstOrDefaultAsync(m => m.ItemId == id);
-            if (item == null)
-            {
-                return NotFound();
-            }
-
-            return View(item);
+            return View(_item);
         }
 
         // POST: Items/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id, [Bind("ItemId,Name,RideStyle,Price,Image,Description")] Item item)
         {
-            if (_context.Items == null)
-            {
-                return Problem("Entity set 'AppDbContext.Items'  is null.");
-            }
-            var item = await _context.Items.FindAsync(id);
-            if (item != null)
-            {
-                _context.Items.Remove(item);
-            }
-            
-            await _context.SaveChangesAsync();
+            _repository.Delete(item);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool ItemExists(int id)
-        {
-          return _context.Items.Any(e => e.ItemId == id);
         }
     }
 }
