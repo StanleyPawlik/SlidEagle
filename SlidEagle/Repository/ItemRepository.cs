@@ -16,7 +16,6 @@ namespace SlidEagle.Repository
         public bool Add(Item item)
         {
             _context.Add(item);
- 
             return Save();
         }
 
@@ -24,11 +23,6 @@ namespace SlidEagle.Repository
         {
             _context.Remove(item);
             return Save();
-        }
-
-        public bool DeleteAll()
-        {
-            throw new NotImplementedException();
         }
 
         public IEnumerable<Item> GetAll()
@@ -76,6 +70,8 @@ namespace SlidEagle.Repository
 
         public bool Update(Item item)
         {
+            _context.Update(item);
+            return Save();
         }
     }
 }

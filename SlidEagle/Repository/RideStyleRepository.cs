@@ -2,6 +2,7 @@
 using SlidEagle.Interfaces;
 using SlidEagle.Models;
 using SlidEagle.Data;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace SlidEagle.Repository
 {
@@ -12,9 +13,44 @@ namespace SlidEagle.Repository
         {
             _context = context;
         }
-        public IEnumerable<Item> GetAll()
+
+        public bool Add(RideStyle rideStyle)
         {
-            return _context.Items.ToList();
+            _context.Add(rideStyle);
+            return Save();
         }
+
+        public bool Delete(RideStyle rideStyle)
+        {
+            _context.Remove(rideStyle);
+            return Save();
+        }
+
+        public IEnumerable<string> GetAll()
+        {
+            return _context.RideStyles.Select(x => x.Name);
+        }
+
+        public RideStyle GetById(int? id)
+        {
+            return _context.RideStyles.Find(id);
+        }
+
+        public bool Save()
+        {
+            var saved = _context.SaveChanges();
+            return saved > 0 ? true : false;
+        }
+
+        public bool Update(RideStyle rideStyle)
+        {
+            _context.Update(rideStyle);
+            return Save();
+        }
+
+        //IEnumerable<RideStyle> IRideStyleRepository.GetAll()
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

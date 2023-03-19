@@ -6,7 +6,7 @@ namespace SlidEagle.Models
     {
         public List<Item>? Items { get; set; }
         public SelectList? RideStyles { get; set; }
-        public string? ItemRideStyle { get; set; }
+        public string? RideStyle { get; set; }
         public string? SearchString { get; set; }
     }
 }

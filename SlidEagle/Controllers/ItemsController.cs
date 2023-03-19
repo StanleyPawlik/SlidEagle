@@ -30,7 +30,7 @@ namespace SlidEagle.Controllers
         
 
         // GET: Movies
-        public async Task<IActionResult> Index(string ItemRideStyle, string searchString)
+        public async Task<IActionResult> Index(string RideStyle, string searchString)
         {
             // Use LINQ to get list of genres.
             //IQueryable<string> rideStyleQuery = from m in _context.Items
@@ -58,7 +58,7 @@ namespace SlidEagle.Controllers
 
             //return View(itemRideStyleVM);
 
-            var items = from m in _repository.Search(searchString, ItemRideStyle)
+            var items = from m in _repository.Search(searchString, RideStyle)
                          select m;
             //var rideStyles = _rideStyleRepository.GetAll();
             var itemRideStyleVM = new ItemRideStyleViewModel

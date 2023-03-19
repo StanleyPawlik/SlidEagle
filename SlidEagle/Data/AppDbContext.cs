@@ -10,7 +10,7 @@ namespace SlidEagle.Data
 
         }
         public DbSet<Item> Items { get; set; }
-        //public DbSet<RideStyle> RideStyles { get; set; }
+        public DbSet<RideStyle> RideStyles { get; set; }
     }
 
 }

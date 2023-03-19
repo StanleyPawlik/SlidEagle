@@ -10,7 +10,6 @@ namespace SlidEagle.Interfaces
         bool Add(Item item);
         bool Update(Item item);
         bool Delete(Item item);
-        bool DeleteAll();
         bool Save();
 
 
