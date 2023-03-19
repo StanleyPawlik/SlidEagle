@@ -15,7 +15,7 @@ namespace SlidEagle.Repository
         }
         public bool Add(Item item)
         {
-             _context.Add(item);
+            _context.Add(item);
  
             return Save();
         }
@@ -76,8 +76,6 @@ namespace SlidEagle.Repository
 
         public bool Update(Item item)
         {
-            _context.Update(item);
-            return Save();
         }
     }
 }
