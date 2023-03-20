@@ -63,7 +63,7 @@ namespace SlidEagle.Controllers
             //var rideStyles = _rideStyleRepository.GetAll();
             var itemRideStyleVM = new ItemRideStyleViewModel
             {
-                RideStyles = new SelectList(_rideStyleRepository.GetAll()),
+                RideStyles = new SelectList(_rideStyleRepository.GetName()),
                 Items = items.ToList()
             };
             return View(itemRideStyleVM);
@@ -94,9 +94,14 @@ namespace SlidEagle.Controllers
         }
 
         // GET: Items/Create
-        public IActionResult Create()
+        public IActionResult Create(string RideStyle)
         {
-            return View();
+            var itemRideStyleVM = new ItemRStyleViewModel
+            {
+                RideStyles = new SelectList(_rideStyleRepository.GetName()),
+                Item = new Item()
+            };
+            return View(itemRideStyleVM);
         }
 
         // POST: Items/Create
@@ -123,12 +128,17 @@ namespace SlidEagle.Controllers
         // GET: Items/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            var item = _repository.GetById(id);
-            if (item == null)
+            var itemRideStyleVM = new ItemRStyleViewModel
+                {
+                RideStyles = new SelectList(_rideStyleRepository.GetName()),
+                Item = _repository.GetById(id)
+            };
+            
+            if (itemRideStyleVM == null)
             {
                 return NotFound();
             }
-            return View(item);
+            return View(itemRideStyleVM);
         }
 
         // POST: Items/Edit/5

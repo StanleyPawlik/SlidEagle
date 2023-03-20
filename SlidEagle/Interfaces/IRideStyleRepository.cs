@@ -4,7 +4,8 @@ namespace SlidEagle.Interfaces
 {
     public interface IRideStyleRepository
     {
-        IEnumerable<string> GetAll();
+        IEnumerable<string> GetName();
+        IEnumerable<RideStyle> GetAll();
         RideStyle GetById(int? id);
         bool Add(RideStyle rideStyle);
         bool Update(RideStyle rideStyle);

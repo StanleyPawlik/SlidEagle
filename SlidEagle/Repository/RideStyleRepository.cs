@@ -26,7 +26,7 @@ namespace SlidEagle.Repository
             return Save();
         }
 
-        public IEnumerable<string> GetAll()
+        public IEnumerable<string> GetName()
         {
             return _context.RideStyles.Select(x => x.Name);
         }
@@ -46,6 +46,11 @@ namespace SlidEagle.Repository
         {
             _context.Update(rideStyle);
             return Save();
+        }
+
+        public IEnumerable<RideStyle> GetAll()
+        {
+            return _context.RideStyles.ToList();
         }
 
         //IEnumerable<RideStyle> IRideStyleRepository.GetAll()

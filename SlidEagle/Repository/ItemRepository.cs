@@ -58,11 +58,6 @@ namespace SlidEagle.Repository
             {
                 items = items.Where(x => x.RideStyle == ItemRideStyle);
             }
-            //var itemRideStyleVM = new ItemRideStyleViewModel
-            //{
-            //    RideStyles = new SelectList( rideStyleQuery.Distinct().ToList()),
-            //    Items = items.ToList()
-            //};
 
 
             return items.ToList() ;

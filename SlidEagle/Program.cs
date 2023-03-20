@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SlidEagle.Data;
@@ -14,6 +15,14 @@ namespace SlidEagle
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+ //           builder.Services.AddDbContext<AppIdentityDbContext>(options =>
+ //options.UseSqlServer(
+ //Configuration["Data:AppIdentity:ConnectionString"]));
+ //           services.AddIdentity<IdentityUser, IdentityRole>()
+ //           .AddEntityFrameworkStores<AppIdentityDbContext>()
+ //           .AddDefaultTokenProviders();
+ //           services.AddMemoryCache();
+ //           services.AddSession();
             builder.Services.AddScoped<IItemRepository, ItemRepository>();
             builder.Services.AddScoped<IRideStyleRepository, RideStyleRepository>();
             builder.Services.AddDbContext<AppDbContext>(options =>
