@@ -29,6 +29,12 @@ namespace SlidEagle
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+            builder.Services.AddDbContext<IdentityContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityContextConnection"));
+            });
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<IdentityContext>();
 
             var app = builder.Build();
 
@@ -44,12 +50,15 @@ namespace SlidEagle
             app.UseStaticFiles();
 
             app.UseRouting();
+                        app.UseAuthentication();;
 
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            app.MapRazorPages();
 
             app.Run();
         }
